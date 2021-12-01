@@ -74,7 +74,7 @@ export default class NumberSequence {
     this.units = drawBoard(this)
 
     this.InputHandler = new InputHandler(this, GAMESTATE);
-    this.updateGameState(GAMESTATE.RUNNING)
+    this.updateGameState(GAMESTATE.MENU)
     this.InputHandler.init()
 
     this.unitErrors = {}
@@ -220,7 +220,8 @@ export default class NumberSequence {
   }
 
   checkPlayButtonClick(clientX, clientY){
-    if (circleAndMouseCollissionDetection(this.gameWidth, this.gameHeight, this.menu.buttonRadius, this.mouse)){
+    console.log('teeest')
+    if (circleAndMouseCollissionDetection(this.gameWidth/2, this.gameHeight/2, this.menu.buttonRadius, this.mouse)){
       this.updateGameState(GAMESTATE.RUNNING)
     }
   }

@@ -23,7 +23,7 @@ export default class Menu {
         ctx.fill();
   
         // add hover effect
-        if (circleAndMouseCollissionDetection(this.gameWidth, this.gameHeight, this.buttonRadius, this.game.mouse)){
+        if (circleAndMouseCollissionDetection(this.gameWidth/2, this.gameHeight/2, this.buttonRadius, this.game.mouse)){
             ctx.strokeStyle = 'rgba(256,256,256,0.5)';
             ctx.fillStyle = "rgba(256,256,256,0.5)";
         }else{
