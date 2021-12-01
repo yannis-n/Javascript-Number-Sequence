@@ -22,8 +22,11 @@ export function drawBoard(game){
 
     let units = [];
     // Position The Grid in the Middle of the Game
-    const centeredX = (game.gameWidth)/2 - (game.unitMeasurement.unitWidth) * (dimensions.row - 1) - game.gap * (dimensions.row-1);
-    const centeredY = (game.gameHeight)/2 - (game.unitMeasurement.unitHeight) * (dimensions.col - 1) - game.gap * (dimensions.col-1);
+    let centeredX = (game.gameWidth)/2 - (game.unitMeasurement.unitWidth) * (dimensions.row - 1) - game.gap * (dimensions.row-1);
+    if (game.centeredXMod > 0){
+        centeredX += game.centeredXMod
+    }
+    let centeredY = (game.gameHeight)/2 - (game.unitMeasurement.unitHeight) * (dimensions.col - 1) - game.gap * (dimensions.col-1);
     let i = 0
 
     game.shuffledBoard.forEach((item, rowIndex) => {

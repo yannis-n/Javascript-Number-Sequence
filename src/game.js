@@ -10,7 +10,8 @@ const GAMESTATE = {
   MENU: 2,
   GAMEOVER: 3,
   NEWLEVEL: 4,
-  LOADING: 5
+  LEVELDONE: 5,
+  LOADING: 6,
 };
 
 const unitMeasurement = {
@@ -20,8 +21,9 @@ const unitMeasurement = {
 
 
 const sequences = [
+  ['1', '4', '23', '45', '78', '92'],
   ['1', '4', '23', '45', '78', '92', '111', '122', '123', '124', '125', '167' ],
-  ['2', '7', '8', '23', '54', '67', '87', '88', '95', '122', '155', '167', '197' ],
+  ['2', '7', '8', '23', '54', '67', '87', '88', '95', '122', '155', '197' ],
   ['1', '4', '23', '45', '78', '92', '111', '122', '123', '124', '132', '167' ],
   ['1', '4', '23', '45', '78', '92', '111', '122', '123', '124', '167', '167' ],
   ['1', '4', '23', '45', '78', '92', '111', '122', '123', '124', '167', '167' ],
@@ -35,6 +37,7 @@ const sequences = [
 export default class NumberSequence {
   constructor(gameWidth, gameHeight, difficulty, canvas) {
     this.canvas = canvas
+    this.rect = canvas.getBoundingClientRect()
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     //padding between the units
@@ -46,13 +49,13 @@ export default class NumberSequence {
 
       });
     })
+    this.archivedAnswers = []
     // set the current sequence to the first one
     this.updateCurrentSequence(0)
     // This is where the candidate sequence answer will be stored
-    this.candidateAnswer = []
 
     this.updateUnitMeasurement()
-    
+    this.dx = 0
     this.mouse = {
       x:0,
       y:0,
@@ -74,6 +77,7 @@ export default class NumberSequence {
     this.updateGameState(GAMESTATE.RUNNING)
     this.InputHandler.init()
 
+    this.unitErrors = {}
   }
 
 
@@ -98,6 +102,8 @@ export default class NumberSequence {
             break;
         case 25:
             dimensions = {row:5, col:5}
+        default:
+            dimensions = {row:5, col:5}
 
       }
       return dimensions 
@@ -108,9 +114,17 @@ export default class NumberSequence {
   // here we update the current sequence and also shuffled it
   updateCurrentSequence(i){
     this.currentSequence = i
-    this.currentBoard = this.sequences[this.currentSequence]
+    console.log(this.sequences)
+    this.currentBoard = this.sequences[i]
+    console.log(this.sequences)
+    console.log(this.sequences[i])
     this.shuffledBoard = shuffle(this.currentBoard.map(inner => inner.slice()))
     this.currentDimensions = this.determineRowAndCol(this.sequences[this.currentSequence])
+    console.log(this.currentDimensions)
+    if (i>0){
+      this.archivedAnswers.push(this.candidateAnswer)
+    }
+    this.candidateAnswer = []
 
   }
 
@@ -133,12 +147,67 @@ export default class NumberSequence {
   }
 
   update(deltaTime) {
+    // Error Fliccker effect
+    for (const [key, value] of Object.entries(this.unitErrors)) {
+      this.unitErrors[key]--;
+      if (this.unitErrors[key] == 0 ){
+        delete this.unitErrors[key]
+
+      }
+    }
+    // this is were the transition between levels is handled
+    if (this.currentBoard.length == this.candidateAnswer.length ) {
+      if (this.gamestate === GAMESTATE.RUNNING) {
+        this.updateGameState(GAMESTATE.LEVELDONE)
+      }
+    }
+
+    if (this.gamestate === GAMESTATE.LEVELDONE){
+
+      this.dx = - 2 * this.rect.right / 15;
+      let unitsAreOutsideTheCanvas = true;
+      [...this.units].forEach((object) => {
+        object.changeXCenter(this.dx)
+        if (object.position.x + object.pathRadius > this.rect.left){
+          unitsAreOutsideTheCanvas = false;
+        }
+      });
+      if (unitsAreOutsideTheCanvas){
+        this.centeredXMod = 2 * this.rect.right;
+        this.dx = this.centeredXMod / 15;
+        this.updateGameState(GAMESTATE.NEWLEVEL)
+        console.log(this.currentSequence + 1)
+        this.updateCurrentSequence(this.currentSequence + 1)     
+
+        this.units = drawBoard(this)
+
+      }
+    }
+
+    if (this.gamestate === GAMESTATE.NEWLEVEL){
+
+      if (this.centeredXMod <= 0 ){
+        this.dx = 0
+        this.updateGameState(GAMESTATE.RUNNING)
+
+      }else{
+        [...this.units].forEach((object) => {
+          object.changeXCenter(-this.dx);
+        });
+      }
+      this.centeredXMod = this.centeredXMod - this.dx;     
+
+    }
+
 
   }
 
   draw(ctx) {
-    if (this.gamestate === GAMESTATE.RUNNING) {
-      [...this.units].forEach((object) => object.draw(ctx));
+    if (this.gamestate === GAMESTATE.RUNNING || this.gamestate === GAMESTATE.LEVELDONE || this.gamestate === GAMESTATE.NEWLEVEL) {
+      [...this.units].forEach((object) => {
+        object.draw(ctx)
+        // console.log(object.position.x)
+      });
     }
 
     if (this.gamestate === GAMESTATE.MENU) {
@@ -161,7 +230,6 @@ export default class NumberSequence {
       x:clientX,
       y:clientY
     };
-    console.log(this.clicked);
  
 
     [...this.units].forEach((object) => {
@@ -175,10 +243,9 @@ export default class NumberSequence {
         if (this.currentBoard[position] == value) {
           this.candidateAnswer.push(value)
 
+        }else{
+          this.unitErrors[value] = 80
         }
-        console.log(this.currentBoard);
-        console.log(this.candidateAnswer);
-        console.log(this.shuffledBoard);
         
       }
     });

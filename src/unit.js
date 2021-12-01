@@ -63,6 +63,10 @@ export default class Unit {
   // }
 
   // draw the unit circle with different border widths
+  changeXCenter(dx){
+    this.position.x = this.position.x + dx;
+  }
+
   draw(ctx) {
     const row = this.row;
     let currentValue =this.game.shuffledBoard[row] 
@@ -73,6 +77,9 @@ export default class Unit {
     if(this.game.candidateAnswer.includes(currentValue)){
       ctx.strokeStyle = 'rgba(0,114,227,0.1)';
       ctx.fillStyle = "rgba(0,114,227,0.1)";
+    }else if (this.game.unitErrors[currentValue] > 0 && this.game.unitErrors[currentValue] % 12 == 0 ){
+      ctx.strokeStyle = 'rgba(255,0,0,1)';
+      ctx.fillStyle = "rgba(255,0,0,1)";
     }else if (circleAndMouseCollissionDetection(this.position.x, this.position.y, this.pathRadius, this.game.mouse)){
       ctx.strokeStyle = 'rgba(0,114,227,0.8)';
       ctx.fillStyle = "rgba(0,114,227,0.8)";

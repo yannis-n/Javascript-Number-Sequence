@@ -7,10 +7,11 @@ export default class InputHandler {
     }
 
     init(){
-      // addEventListener('mousemove', event => {
-      //   this.game.mouse.x = event.clientX;
-      //   this.game.mouse.y = event.clientY;
-      // });
+      addEventListener('mousemove', event => {
+        let position = getCursorPosition(this.game.canvas, event)
+        this.game.mouse.x = position.x;
+        this.game.mouse.y = position.y;
+      });
 
       document.addEventListener("click", event => {
         if (this.game.gamestate === this.GAMESTATE.MENU) {
