@@ -34,24 +34,23 @@ const sequences = [
 
 export default class NumberSequence {
   constructor(gameWidth, gameHeight, difficulty, canvas) {
-    //padding around the board
-    this.padding = 20;
     this.canvas = canvas
+    this.gameWidth = gameWidth;
+    this.gameHeight = gameHeight;
     //padding between the units
     this.gap = 10
+    // here making sure that the sequences are in the right order
     this.sequences = sequences.map(arrayRow => {
       return arrayRow.sort((a, b) => {
         return parseInt(a) - parseInt(b);
 
       });
     })
-
+    // set the current sequence to the first one
     this.updateCurrentSequence(0)
-
+    // This is where the candidate sequence answer will be stored
     this.candidateAnswer = []
 
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameHeight;
     this.updateUnitMeasurement()
     
     this.mouse = {
@@ -63,12 +62,6 @@ export default class NumberSequence {
       x:0,
       y:0,
     }
-
-    this.selectedUnit = {
-      row:0,
-      col:0
-    }
-
     this.difficulty = difficulty
 
 
@@ -77,45 +70,46 @@ export default class NumberSequence {
 
     this.units = drawBoard(this)
 
-
     this.InputHandler = new InputHandler(this, GAMESTATE);
     this.updateGameState(GAMESTATE.RUNNING)
     this.InputHandler.init()
 
   }
 
-  
-determineRowAndCol(sequence){
 
-  let dimensions;
-  switch (sequence.length) {
-      case 4:
-        dimensions = {row:2, col:2}
-        break;
-      case 6:
-          dimensions = {row:2, col:3}
+  // Determine the number of rows and columns our Grid will have depending on the length of the sequence
+  determineRowAndCol(sequence){
+    let dimensions;
+    switch (sequence.length) {
+        case 4:
+          dimensions = {row:2, col:2}
           break;
-      case 8:
-          dimensions = {row:2, col:4}
-          break;
-      case 12:
-          dimensions = {row:3, col:4}
-          break;
-      case 16:
-          dimensions = {row:4, col:4}
-          break;
-      case 25:
-          dimensions = {row:5, col:5}
+        case 6:
+            dimensions = {row:2, col:3}
+            break;
+        case 8:
+            dimensions = {row:2, col:4}
+            break;
+        case 12:
+            dimensions = {row:3, col:4}
+            break;
+        case 16:
+            dimensions = {row:4, col:4}
+            break;
+        case 25:
+            dimensions = {row:5, col:5}
 
-    }
-    return dimensions 
+      }
+      return dimensions 
 
-}
+  }
 
+
+  // here we update the current sequence and also shuffled it
   updateCurrentSequence(i){
     this.currentSequence = i
     this.currentBoard = this.sequences[this.currentSequence]
-    this.shuffledBoard = shuffle(this.currentBoard)
+    this.shuffledBoard = shuffle(this.currentBoard.map(inner => inner.slice()))
     this.currentDimensions = this.determineRowAndCol(this.sequences[this.currentSequence])
 
   }
@@ -132,8 +126,6 @@ determineRowAndCol(sequence){
         unitWidth : 35,
         unitHeight : 35
       };
-    console.log(this.unitMeasurement)
-    console.log(this.unitMeasurement)
 
   }
 
@@ -146,7 +138,6 @@ determineRowAndCol(sequence){
 
   draw(ctx) {
     if (this.gamestate === GAMESTATE.RUNNING) {
-      // [...this.units].forEach((object) => object.drawSelectedColors(ctx));
       [...this.units].forEach((object) => object.draw(ctx));
     }
 
@@ -165,7 +156,7 @@ determineRowAndCol(sequence){
     }
   }
 
-  selectUnitClick(clientX, clientY){
+  handleUnitClick(clientX, clientY){
     this.clicked = {
       x:clientX,
       y:clientY
@@ -174,24 +165,23 @@ determineRowAndCol(sequence){
  
 
     [...this.units].forEach((object) => {
+      // find the Grid Unit that was actually clicked
       if (circleAndMouseCollissionDetection(object.position.x, object.position.y, object.pathRadius, this.clicked)){
-        console.log(object.position.x);
-        console.log(object.position.y);
-        console.log(object.pathRadius);
-        this.candidateAnswer.push(this.shuffledBoard[object.row])
+        // Here check whether the value clicked is the next correct item in the correct sequence
+        // if true then proceed with the click event
+        // if false then notify the player
+        let value = this.shuffledBoard[object.row];
+        let position = this.candidateAnswer.length
+        if (this.currentBoard[position] == value) {
+          this.candidateAnswer.push(value)
+
+        }
+        console.log(this.currentBoard);
+        console.log(this.candidateAnswer);
+        console.log(this.shuffledBoard);
         
       }
     });
-
-
-  }
-
-  fillNumber(number){
-    let selectedUnit = this.selectedUnit
-    if (this.boardExample[selectedUnit.row][selectedUnit.col] == '.'){
-      this.board[selectedUnit.row][selectedUnit.col] = String(number)
-
-    }
   }
 
 

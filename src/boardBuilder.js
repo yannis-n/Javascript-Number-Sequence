@@ -25,13 +25,6 @@ export function drawBoard(game){
     const centeredX = (game.gameWidth)/2 - (game.unitMeasurement.unitWidth) * (dimensions.row - 1) - game.gap * (dimensions.row-1);
     const centeredY = (game.gameHeight)/2 - (game.unitMeasurement.unitHeight) * (dimensions.col - 1) - game.gap * (dimensions.col-1);
     let i = 0
-    console.log(centeredX)
-    console.log(game.unitMeasurement)
-    console.log(game.gameWidth)
-    console.log(size)
-    console.log(dimensions.col)
-    console.log(game.gap)
-    console.log(game.padding)
 
     game.shuffledBoard.forEach((item, rowIndex) => {
         let index = rowIndex % dimensions.row

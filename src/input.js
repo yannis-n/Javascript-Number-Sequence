@@ -1,3 +1,5 @@
+import { getCursorPosition } from "../src/helper.js";
+
 export default class InputHandler {
     constructor(game, GAMESTATE) {
           this.game = game
@@ -10,19 +12,19 @@ export default class InputHandler {
       //   this.game.mouse.y = event.clientY;
       // });
 
-      document.addEventListener("click", e => {
+      document.addEventListener("click", event => {
         if (this.game.gamestate === this.GAMESTATE.MENU) {
-          this.game.checkPlayButtonClick(e.clientX-rect.x, e.clientY-rect.y);
+          let position = getCursorPosition(this.game.canvas, event)
+          this.game.checkPlayButtonClick(position.x, position.y);
         }
       });
 
   
         
-        document.addEventListener("click", e => {
+        document.addEventListener("click", event => {
           if (this.game.gamestate === this.GAMESTATE.RUNNING) {
-            const rect = this.game.canvas.getBoundingClientRect()
-            console.log(rect)
-            this.game.selectUnitClick(e.clientX-rect.x, e.clientY-rect.y);
+            let position = getCursorPosition(this.game.canvas, event)
+            this.game.handleUnitClick(position.x, position.y);
           }
         });
 
