@@ -32,6 +32,7 @@ var PIXEL_RATIO = (function () {
   
 export function createHiDPICanvas (w, h, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
+    console.log(ratio)
     var can = document.getElementById("gameScreen");
     can.width = w * ratio;
     can.height = h * ratio;

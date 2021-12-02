@@ -114,13 +114,9 @@ export default class NumberSequence {
   // here we update the current sequence and also shuffled it
   updateCurrentSequence(i){
     this.currentSequence = i
-    console.log(this.sequences)
     this.currentBoard = this.sequences[i]
-    console.log(this.sequences)
-    console.log(this.sequences[i])
     this.shuffledBoard = shuffle(this.currentBoard.map(inner => inner.slice()))
     this.currentDimensions = this.determineRowAndCol(this.sequences[this.currentSequence])
-    console.log(this.currentDimensions)
     if (i>0){
       this.archivedAnswers.push(this.candidateAnswer)
     }
@@ -176,7 +172,6 @@ export default class NumberSequence {
         this.centeredXMod = 2 * this.rect.right;
         this.dx = this.centeredXMod / 15;
         this.updateGameState(GAMESTATE.NEWLEVEL)
-        console.log(this.currentSequence + 1)
         this.updateCurrentSequence(this.currentSequence + 1)     
 
         this.units = drawBoard(this)
@@ -206,7 +201,6 @@ export default class NumberSequence {
     if (this.gamestate === GAMESTATE.RUNNING || this.gamestate === GAMESTATE.LEVELDONE || this.gamestate === GAMESTATE.NEWLEVEL) {
       [...this.units].forEach((object) => {
         object.draw(ctx)
-        // console.log(object.position.x)
       });
     }
 
@@ -220,7 +214,6 @@ export default class NumberSequence {
   }
 
   checkPlayButtonClick(clientX, clientY){
-    console.log('teeest')
     if (circleAndMouseCollissionDetection(this.gameWidth/2, this.gameHeight/2, this.menu.buttonRadius, this.mouse)){
       this.updateGameState(GAMESTATE.RUNNING)
     }
