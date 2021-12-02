@@ -180,9 +180,9 @@ export default class NumberSequence {
     }
 
     if (this.gamestate === GAMESTATE.NEWLEVEL){
-
-      if (this.centeredXMod <= 0 ){
+      if (Math.floor(this.centeredXMod) <= 0 ){
         this.dx = 0
+        this.centeredXMod = 0
         this.updateGameState(GAMESTATE.RUNNING)
 
       }else{

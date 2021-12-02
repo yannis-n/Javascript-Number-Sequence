@@ -19,20 +19,18 @@ export function circleAndMouseCollissionDetection(x, y, radius, mouse) {
 
 var PIXEL_RATIO = (function () {
     var ctx = document.getElementById("gameScreen").getContext("2d"),
-        dpr = window.devicePixelRatio || 1,
-        bsr = ctx.webkitBackingStorePixelRatio ||
+    dpr = window.screen.availWidth / document.documentElement.clientWidth || 1,
+    bsr = ctx.webkitBackingStorePixelRatio ||
               ctx.mozBackingStorePixelRatio ||
               ctx.msBackingStorePixelRatio ||
               ctx.oBackingStorePixelRatio ||
               ctx.backingStorePixelRatio || 1;
-  
     return dpr / bsr;
   })();
   
   
 export function createHiDPICanvas (w, h, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
-    console.log(ratio)
     var can = document.getElementById("gameScreen");
     can.width = w * ratio;
     can.height = h * ratio;
