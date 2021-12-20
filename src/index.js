@@ -11,9 +11,9 @@ window.onload = function (){
   
   // let ctx = setupCanvas(canvas);
   
-  const GAME_WIDTH = rect.width;
-  const GAME_HEIGHT = rect.height;
-  const difficulty = 1;
+  let GAME_WIDTH = rect.width;
+  let GAME_HEIGHT = rect.height;
+  let difficulty = 1;
   
   let numberSequence = new NumberSequence(GAME_WIDTH, GAME_HEIGHT, difficulty, canvas);
   
@@ -35,9 +35,11 @@ window.onload = function (){
       let screenContainer = document.getElementById("screen-container");
       console.log(screenContainer.offsetWidth)
       canvas = createHiDPICanvas(screenContainer.offsetWidth, screenContainer.offsetHeight);
+      ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+      ctx = canvas.getContext('2d');
 
-      const GAME_WIDTH = screenContainer.offsetWidth;
-      const GAME_HEIGHT = screenContainer.offsetHeight;
+      GAME_WIDTH = screenContainer.offsetWidth;
+      GAME_HEIGHT = screenContainer.offsetHeight;
 
       numberSequence.updateGameSize(GAME_WIDTH, GAME_HEIGHT)
 

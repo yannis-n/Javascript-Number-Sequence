@@ -149,6 +149,18 @@ export default class NumberSequence {
         unitHeight : this.gameWidth / 16
       };
 
+    if (this.gameWidth < 400){
+      this.unitMeasurement = {
+        unitWidth : 35,
+        unitHeight : 35
+      };
+    } else if (this.gameWidth > 1200){
+      this.unitMeasurement = {
+        unitWidth : 60,
+        unitHeight : 60
+      };
+    }
+
   }
 
   start() {
