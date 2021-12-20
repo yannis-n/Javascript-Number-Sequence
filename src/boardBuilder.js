@@ -14,7 +14,7 @@ export function createBoard(game){
     }
 
 
-export function drawBoard(game){
+export function drawBoard(game, unitsToBeUpdated = []){
     let size = game.sequences[game.currentSequence].length
     let currentSequence = game.currentSequence
     let sequence = game.sequences[currentSequence]
@@ -29,15 +29,31 @@ export function drawBoard(game){
     let centeredY = (game.gameHeight)/2 - (game.unitMeasurement.unitHeight) * (dimensions.col - 1) - game.gap * (dimensions.col-1);
     let i = 0
 
-    game.shuffledBoard.forEach((item, rowIndex) => {
-        let index = rowIndex % dimensions.row
-        let col = rowIndex % dimensions.col
-        i++;
+    if (unitsToBeUpdated.length > 0){
+        unitsToBeUpdated.forEach((object, rowIndex) => {
+            let index = rowIndex % dimensions.row
+            let col = rowIndex % dimensions.col
+            i++;
+            let position = {
+                x: centeredX + 2 * (game.unitMeasurement.unitWidth + game.gap) * index ,
+                y: centeredY + 2 * (game.unitMeasurement.unitHeight + game.gap) * col 
+            };
+            object.updateSize(position, game.unitMeasurement);
+        });
+        return unitsToBeUpdated
+
+    }else{
+        game.shuffledBoard.forEach((item, rowIndex) => {
+            let index = rowIndex % dimensions.row
+            let col = rowIndex % dimensions.col
+            i++;
             let position = {
                 x: centeredX + 2 * (game.unitMeasurement.unitWidth + game.gap) * index ,
                 y: centeredY + 2 * (game.unitMeasurement.unitHeight + game.gap) * col 
             };
             units.push(new Unit(game, position, game.unitMeasurement, rowIndex))
-    })
-      return units
+        })
+          return units
+    }
+
 }

@@ -7,7 +7,6 @@ window.onload = function (){
   let canvas = document.getElementById("gameScreen");
   var rect = canvas.getBoundingClientRect();
   canvas = createHiDPICanvas(rect.width, rect.height);
-  console.log('teeest')
   let ctx = canvas.getContext('2d');
   
   // let ctx = setupCanvas(canvas);
@@ -31,6 +30,19 @@ window.onload = function (){
     }
     
     requestAnimationFrame(gameLoop);
+
+    window.addEventListener('resize', function(){
+      let screenContainer = document.getElementById("screen-container");
+      console.log(screenContainer.offsetWidth)
+      canvas = createHiDPICanvas(screenContainer.offsetWidth, screenContainer.offsetHeight);
+
+      const GAME_WIDTH = screenContainer.offsetWidth;
+      const GAME_HEIGHT = screenContainer.offsetHeight;
+
+      numberSequence.updateGameSize(GAME_WIDTH, GAME_HEIGHT)
+
+    });
+
     
 }
 

@@ -1,6 +1,6 @@
 import InputHandler from "../src/input.js";
 import { createBoard, drawBoard } from "./boardBuilder.js";
-import { createMenu } from "../src/helperScreens.js";
+import { createMenu, createLoadingBar } from "../src/helperScreens.js";
 import { createHiDPICanvas, circleAndMouseCollissionDetection, shuffle  } from "../src/helper.js";
 
 
@@ -13,12 +13,6 @@ const GAMESTATE = {
   LEVELDONE: 5,
   LOADING: 6,
 };
-
-const unitMeasurement = {
-  unitWidth : 50,
-  unitHeight : 50
-};
-
 
 const sequences = [
   ['1', '4', '23', '45', '78', '92'],
@@ -38,6 +32,7 @@ export default class NumberSequence {
   constructor(gameWidth, gameHeight, difficulty, canvas) {
     this.canvas = canvas
     this.rect = canvas.getBoundingClientRect()
+
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     //padding between the units
@@ -68,16 +63,33 @@ export default class NumberSequence {
     this.difficulty = difficulty
 
 
-    this.menu = createMenu(this, gameWidth, gameHeight)
-    
-
     this.units = drawBoard(this)
 
     this.InputHandler = new InputHandler(this, GAMESTATE);
-    this.updateGameState(GAMESTATE.MENU)
+    this.updateGameState(GAMESTATE.LOADING)
     this.InputHandler.init()
 
     this.unitErrors = {}
+    this.step = 11
+
+
+    // this is where all the helper screens will be loaled #helperScreensCode
+
+    
+    // this.menu = createMenu(this, gameWidth, gameHeight)
+    
+    this.loadingBar = createLoadingBar(this)
+
+  }
+
+  updateGameSize(GAME_WIDTH, GAME_HEIGHT){
+    this.gameWidth = GAME_WIDTH;
+    this.gameHeight = GAME_HEIGHT;
+    this.updateUnitMeasurement();
+    this.units = drawBoard(this, this.units)
+    this.rect = this.canvas.getBoundingClientRect()
+    console.log(this.rect)
+
   }
 
 
@@ -133,13 +145,31 @@ export default class NumberSequence {
     // };
 
     this.unitMeasurement = {
-        unitWidth : 35,
-        unitHeight : 35
+        unitWidth : this.gameWidth / 16,
+        unitHeight : this.gameWidth / 16
       };
 
   }
 
   start() {
+  }
+
+  moveLevelOutsideFrame(){
+    let unitsAreOutsideTheCanvas = true;
+      [...this.units].forEach((object) => {
+        object.changeXCenter(this.dx)
+        if (object.position.x + object.pathRadius > this.rect.left){
+          unitsAreOutsideTheCanvas = false;
+        }
+      });
+
+      return unitsAreOutsideTheCanvas  
+  }
+
+  moveLevelInsideFrame(){
+    [...this.units].forEach((object) => {
+      object.changeXCenter(-this.dx);
+    });
   }
 
   update(deltaTime) {
@@ -160,22 +190,13 @@ export default class NumberSequence {
 
     if (this.gamestate === GAMESTATE.LEVELDONE){
 
-      this.dx = - 2 * this.rect.right / 15;
-      let unitsAreOutsideTheCanvas = true;
-      [...this.units].forEach((object) => {
-        object.changeXCenter(this.dx)
-        if (object.position.x + object.pathRadius > this.rect.left){
-          unitsAreOutsideTheCanvas = false;
-        }
-      });
-      if (unitsAreOutsideTheCanvas){
+      this.dx = - 2 * this.rect.right / this.step;
+      if (this.moveLevelOutsideFrame()){
         this.centeredXMod = 2 * this.rect.right;
-        this.dx = this.centeredXMod / 15;
+        this.dx = this.centeredXMod / this.step;
         this.updateGameState(GAMESTATE.NEWLEVEL)
-        this.updateCurrentSequence(this.currentSequence + 1)     
-
+        this.updateCurrentSequence(this.currentSequence + 1)
         this.units = drawBoard(this)
-
       }
     }
 
@@ -186,15 +207,25 @@ export default class NumberSequence {
         this.updateGameState(GAMESTATE.RUNNING)
 
       }else{
-        [...this.units].forEach((object) => {
-          object.changeXCenter(-this.dx);
-        });
+        this.moveLevelInsideFrame()
       }
       this.centeredXMod = this.centeredXMod - this.dx;     
 
     }
 
+    // this is where all the helper screens will be loaled #helperScreensCode
+    if (this.gamestate === GAMESTATE.LOADING){
 
+      if (this.loadingBar.loaded()){
+        this.loadingBar.hide()
+            if (this.loadingBar.hidden()){
+              this.updateGameState(GAMESTATE.RUNNING)
+
+            }
+
+          
+      }
+    }
   }
 
   draw(ctx) {
@@ -204,9 +235,9 @@ export default class NumberSequence {
       });
     }
 
-    if (this.gamestate === GAMESTATE.MENU) {
-      this.menu.draw(ctx)
-    }
+    // if (this.gamestate === GAMESTATE.RUNNING) {
+    //   this.menu.draw(ctx)
+    // }
   }
 
   updateGameState(state){

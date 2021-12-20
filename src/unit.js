@@ -12,8 +12,11 @@ export default class Unit {
     this.pathRadius = this.width
   }
 
-  update() {
-
+  updateSize(position, unitMeasurement) {
+    this.position = position;
+    this.width = unitMeasurement.unitWidth;
+    this.height = unitMeasurement.unitHeight;
+    this.pathRadius = this.width
   }
 
   drawUnit(ctx, row, col, start, end ){
