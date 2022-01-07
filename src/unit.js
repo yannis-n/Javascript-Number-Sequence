@@ -34,36 +34,11 @@ export default class Unit {
     || (this.row % 3 == 2 && start[1] == end[1] && start[0] > end[0])){
         ctx.lineWidth =1;
 
-      }
+    }
     ctx.lineTo(end[0], end[1]);
     ctx.stroke();
-
-   
   }
 
-  // drawSelectedColors(ctx){
-  //  // add fill if the specific unit is selected
-  //  const row = this.row;
-  // const col = this.col;
-
-  // let path = this.path 
-
-  //  if (this.game.selectedUnit.row == this.row && this.game.selectedUnit.col == this.col){
-  //     ctx.beginPath();
-
-  //     ctx.rect(path[0][0], path[0][1], this.width, this.height);
-  //     ctx.fillStyle = "rgb(187, 222, 251, 1)";
-  //     ctx.fill();
-  //   }else if ((this.game.selectedUnit.row == this.row && this.game.selectedUnit.col != this.col)
-  //   || (this.game.selectedUnit.row != this.row && this.game.selectedUnit.col == this.col)
-  //   || (parseInt(this.game.selectedUnit.row / 3) * 3 == parseInt(this.row / 3) * 3 && parseInt(this.game.selectedUnit.col / 3) * 3 == parseInt(this.col / 3) * 3)){
-  //     ctx.beginPath();
-
-  //     ctx.rect(path[0][0], path[0][1], this.width, this.height);
-  //     ctx.fillStyle = "rgb(226, 235, 243, 1)";
-  //     ctx.fill();
-  //   }
-  // }
 
   // draw the unit circle with different border widths
   changeXCenter(dx){
@@ -83,7 +58,7 @@ export default class Unit {
     }else if (this.game.unitErrors[currentValue] > 0 && this.game.unitErrors[currentValue] % 12 == 0 ){
       ctx.strokeStyle = 'rgba(255,0,0,1)';
       ctx.fillStyle = "rgba(255,0,0,1)";
-    }else if (circleAndMouseCollissionDetection(this.position.x, this.position.y, this.pathRadius, this.game.mouse)){
+    }else if (circleAndMouseCollissionDetection(this.position.x, this.position.y, this.pathRadius, this.game.mouse) && this.game.gamestate == this.game.GAMESTATE.RUNNING){
       ctx.strokeStyle = 'rgba(0,114,227,0.8)';
       ctx.fillStyle = "rgba(0,114,227,0.8)";
     }else{

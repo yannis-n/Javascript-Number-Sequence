@@ -10,7 +10,8 @@ window.onload = function (){
   let ctx = canvas.getContext('2d');
   
   // let ctx = setupCanvas(canvas);
-  
+  console.log(rect)
+
   let GAME_WIDTH = rect.width;
   let GAME_HEIGHT = rect.height;
   let difficulty = 1;

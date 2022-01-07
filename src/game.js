@@ -1,8 +1,7 @@
 import InputHandler from "../src/input.js";
 import { createBoard, drawBoard } from "./boardBuilder.js";
-import { createMenu, createLoadingBar } from "../src/helperScreens.js";
-import { createHiDPICanvas, circleAndMouseCollissionDetection, shuffle  } from "../src/helper.js";
-
+import { updateGameStateForHelperScreens, createAssessementSymbols, createMenu, createLoadingBar, createMenuBar, createStartingGameCountDown } from "../src/helperScreens/helperScreens.js";
+import { circleAndMouseCollissionDetection, shuffle  } from "../src/helper.js";
 
 const GAMESTATE = {
   PAUSED: 0,
@@ -12,6 +11,9 @@ const GAMESTATE = {
   NEWLEVEL: 4,
   LEVELDONE: 5,
   LOADING: 6,
+  ASSESSINGLEVEL: 7,
+  REST: 8,
+  STARTINGAME: 9
 };
 
 const sequences = [
@@ -32,6 +34,7 @@ export default class NumberSequence {
   constructor(gameWidth, gameHeight, difficulty, canvas) {
     this.canvas = canvas
     this.rect = canvas.getBoundingClientRect()
+    this.GAMESTATE = GAMESTATE;
 
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
@@ -71,15 +74,39 @@ export default class NumberSequence {
 
     this.unitErrors = {}
     this.step = 11
+    this.candidateAnswer = []
 
 
     // this is where all the helper screens will be loaled #helperScreensCode
+    this.tutorial = 'test'
+    this.undoButtonFuncionality = false;
+    this.soundOn = true;
+    this.correctAndWrongAssessement = true;
 
     
-    // this.menu = createMenu(this, gameWidth, gameHeight)
-    
-    this.loadingBar = createLoadingBar(this)
+    this.helperScreens = {
+      menu : createMenu(this, gameWidth, gameHeight),
+      assessementSymbols: createAssessementSymbols(this),    
+      loadingBar : createLoadingBar(this),
+      menuBar : createMenuBar(this),
+      startingGameCountDown: createStartingGameCountDown(this),
+    }
+  }
 
+  refreshAnswers(){
+    this.candidateAnswer = []
+  }
+
+  undoAnswers(){
+    this.candidateAnswer = []
+  }
+
+  levelCompleted(){
+    return this.currentBoard.length == this.candidateAnswer.length
+  }
+
+  correctAssessement(){
+    return true;
   }
 
   updateGameSize(GAME_WIDTH, GAME_HEIGHT){
@@ -88,7 +115,6 @@ export default class NumberSequence {
     this.updateUnitMeasurement();
     this.units = drawBoard(this, this.units)
     this.rect = this.canvas.getBoundingClientRect()
-    console.log(this.rect)
 
   }
 
@@ -132,7 +158,6 @@ export default class NumberSequence {
     if (i>0){
       this.archivedAnswers.push(this.candidateAnswer)
     }
-    this.candidateAnswer = []
 
   }
 
@@ -193,12 +218,7 @@ export default class NumberSequence {
 
       }
     }
-    // this is were the transition between levels is handled
-    if (this.currentBoard.length == this.candidateAnswer.length ) {
-      if (this.gamestate === GAMESTATE.RUNNING) {
-        this.updateGameState(GAMESTATE.LEVELDONE)
-      }
-    }
+    
 
     if (this.gamestate === GAMESTATE.LEVELDONE){
 
@@ -225,31 +245,16 @@ export default class NumberSequence {
 
     }
 
-    // this is where all the helper screens will be loaled #helperScreensCode
-    if (this.gamestate === GAMESTATE.LOADING){
+    updateGameStateForHelperScreens(this, GAMESTATE)
 
-      if (this.loadingBar.loaded()){
-        this.loadingBar.hide()
-            if (this.loadingBar.hidden()){
-              this.updateGameState(GAMESTATE.RUNNING)
-
-            }
-
-          
-      }
-    }
   }
 
   draw(ctx) {
-    if (this.gamestate === GAMESTATE.RUNNING || this.gamestate === GAMESTATE.LEVELDONE || this.gamestate === GAMESTATE.NEWLEVEL) {
+    if (this.gamestate === GAMESTATE.RUNNING || this.gamestate === GAMESTATE.REST || this.gamestate === GAMESTATE.PAUSED || this.gamestate === GAMESTATE.LEVELDONE || this.gamestate === GAMESTATE.NEWLEVEL || this.gamestate === GAMESTATE.ASSESSINGLEVEL) {
       [...this.units].forEach((object) => {
         object.draw(ctx)
       });
     }
-
-    // if (this.gamestate === GAMESTATE.RUNNING) {
-    //   this.menu.draw(ctx)
-    // }
   }
 
   updateGameState(state){
