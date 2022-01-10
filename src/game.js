@@ -261,12 +261,6 @@ export default class NumberSequence {
     this.gamestate = state;
   }
 
-  checkPlayButtonClick(clientX, clientY){
-    if (circleAndMouseCollissionDetection(this.gameWidth/2, this.gameHeight/2, this.menu.buttonRadius, this.mouse)){
-      this.updateGameState(GAMESTATE.RUNNING)
-    }
-  }
-
   handleUnitClick(clientX, clientY){
     this.clicked = {
       x:clientX,

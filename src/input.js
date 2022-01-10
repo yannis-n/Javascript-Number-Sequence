@@ -11,16 +11,7 @@ export default class InputHandler {
         let position = getCursorPosition(this.game.canvas, event)
         this.game.mouse.x = position.x;
         this.game.mouse.y = position.y;
-      });
-
-      document.addEventListener("click", event => {
-        if (this.game.gamestate === this.GAMESTATE.MENU) {
-          let position = getCursorPosition(this.game.canvas, event)
-          this.game.checkPlayButtonClick(position.x, position.y);
-        }
-      });
-
-  
+      });  
         
         document.addEventListener("click", event => {
           if (this.game.gamestate === this.GAMESTATE.RUNNING) {
